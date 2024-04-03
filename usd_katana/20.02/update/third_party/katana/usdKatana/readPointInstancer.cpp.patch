@@ -1,0 +1,29 @@
+--- readPointInstancer.cpp	2020-01-25 04:25:02.000000000 +0900
++++ readPointInstancer_new.cpp	2020-05-06 16:49:08.640161231 +0900
+@@ -294,7 +294,7 @@
+         data.GetMotionSampleTimes(positionsAttr, ensureMotion);
+     const size_t sampleCount = motionSampleTimes.size();
+     std::vector<UsdTimeCode> sampleTimes(sampleCount);
+-    std::transform(motionSampleTimes.begin(), motionSampleTimes.end(), 
++    std::transform(motionSampleTimes.begin(), motionSampleTimes.end(),
+                    sampleTimes.begin(), [currentTime](double motionSampleTime){
+                         return UsdTimeCode(currentTime + motionSampleTime);});
+ 
+@@ -359,7 +359,7 @@
+     std::map<SdfPath, std::string> protoPathsToKatPaths;
+     std::map<std::string, std::vector<std::string>> usdPrimPathsTracker;
+ 
+-    
++
+ 
+     for (size_t i = 0; i < numInstances; ++i)
+     {
+@@ -670,7 +670,7 @@
+     if (!omitList.empty())
+     {
+         instancesBldr.setAttrAtLocation("instances",
+-                "geometry.omitList",
++                "geometry.instanceSkipIndex",
+                         FnKat::IntAttribute(&omitList[0], omitList.size(), 1));
+     }
+ 

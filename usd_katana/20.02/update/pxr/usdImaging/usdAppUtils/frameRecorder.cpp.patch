@@ -1,0 +1,51 @@
+--- frameRecorder.cpp	2020-01-25 04:25:02.000000000 +0900
++++ frameRecorder_new.cpp	2020-05-06 17:34:30.262089794 +0900
+@@ -70,7 +70,7 @@
+ }
+ 
+ void
+-UsdAppUtilsFrameRecorder::SetIncludedPurposes(const TfTokenVector& purposes) 
++UsdAppUtilsFrameRecorder::SetIncludedPurposes(const TfTokenVector& purposes)
+ {
+     TfTokenVector  allPurposes = { UsdGeomTokens->render,
+                                    UsdGeomTokens->proxy,
+@@ -154,7 +154,7 @@
+     const GfVec4f SPECULAR_DEFAULT(0.1f, 0.1f, 0.1f, 1.0f);
+     const GfVec4f AMBIENT_DEFAULT(0.2f, 0.2f, 0.2f, 1.0f);
+     const float   SHININESS_DEFAULT(32.0);
+-    
++
+     // XXX: If the camera's aspect ratio is animated, then a range of calls to
+     // this function may generate a sequence of images with different sizes.
+     GfCamera gfCamera;
+@@ -168,9 +168,11 @@
+         aspectRatio = 1.0f;
+     }
+ 
+-    const size_t imageHeight = std::max<size_t>(
++    // const size_t imageHeight = std::max<size_t>(
++    size_t imageHeight = std::max<size_t>(
+         static_cast<size_t>(static_cast<float>(_imageWidth) / aspectRatio),
+         1u);
++    if ( imageHeight % 2 != 0 ) imageHeight -= 1;
+     const GfVec2i renderResolution(_imageWidth, imageHeight);
+ 
+     const GfFrustum frustum = gfCamera.GetFrustum();
+@@ -192,7 +194,7 @@
+ 
+     const GlfSimpleLightVector lights({cameraLight});
+ 
+-    // Make default material and lighting match usdview's defaults... we expect 
++    // Make default material and lighting match usdview's defaults... we expect
+     // GlfSimpleMaterial to go away soon, so not worth refactoring for sharing
+     GlfSimpleMaterial material;
+     material.SetAmbient(AMBIENT_DEFAULT);
+@@ -210,7 +212,7 @@
+     renderParams.showProxy = _HasPurpose(_purposes, UsdGeomTokens->proxy);
+     renderParams.showRender = _HasPurpose(_purposes, UsdGeomTokens->render);
+     renderParams.showGuides = _HasPurpose(_purposes, UsdGeomTokens->guide);
+-    
++
+     glEnable(GL_DEPTH_TEST);
+ 
+     GlfDrawTargetRefPtr drawTarget = GlfDrawTarget::New(renderResolution);

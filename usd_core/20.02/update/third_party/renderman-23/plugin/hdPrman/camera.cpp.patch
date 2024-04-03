@@ -1,0 +1,63 @@
+--- camera.cpp	2020-01-25 04:25:02.000000000 +0900
++++ camera_new.cpp	2020-05-06 17:21:24.870110409 +0900
+@@ -48,7 +48,7 @@
+ HdPrmanCamera::Sync(HdSceneDelegate *sceneDelegate,
+                     HdRenderParam   *renderParam,
+                     HdDirtyBits     *dirtyBits)
+-{  
++{
+     HD_TRACE_FUNCTION();
+     HF_MALLOC_TAG_FUNCTION();
+ 
+@@ -101,7 +101,7 @@
+ HdPrmanCamera::GetInitialDirtyBitsMask() const
+ {
+     // Ensure that DirtyParams is also set.
+-    return AllDirty; 
++    return AllDirty;
+ }
+ 
+ bool
+@@ -138,17 +138,17 @@
+         projParams.SetFloat(RixStr.k_fStop, value);
+     }
+ 
+-    float const *focalLength =
+-        _GetDictItem<float>(_params, HdCameraTokens->focalLength);
+-    if (focalLength) {
+-        projParams.SetFloat(RixStr.k_focalLength, *focalLength);
+-    }
+-
+-    float const *focusDistance =
+-        _GetDictItem<float>(_params, HdCameraTokens->focusDistance);
+-    if (focusDistance) {
+-        projParams.SetFloat(RixStr.k_focalDistance, *focusDistance);
+-    }
++    // float const *focalLength =
++    //     _GetDictItem<float>(_params, HdCameraTokens->focalLength);
++    // if (focalLength) {
++    //     projParams.SetFloat(RixStr.k_focalLength, *focalLength);
++    // }
++    //
++    // float const *focusDistance =
++    //     _GetDictItem<float>(_params, HdCameraTokens->focusDistance);
++    // if (focusDistance) {
++    //     projParams.SetFloat(RixStr.k_focalDistance, *focusDistance);
++    // }
+ 
+     // Following parameters are currently set on the Riley camera:
+     // 'nearClip' (float): near clipping distance
+@@ -183,7 +183,7 @@
+         // if (shutterOpen) {
+         //     camParams->SetFloat(RixStr.k_shutterOpenTime, *shutterOpen);
+         // }
+-        
++
+         // double const *shutterClose =
+         //     _GetDictItem<double>(_params, HdCameraTokens->shutterClose);
+         // if (shutterClose) {
+@@ -192,4 +192,3 @@
+ }
+ 
+ PXR_NAMESPACE_CLOSE_SCOPE
+-

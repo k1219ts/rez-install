@@ -1,0 +1,254 @@
+--- context.cpp	2020-01-25 04:25:02.000000000 +0900
++++ context_new.cpp	2020-05-06 17:22:56.281108010 +0900
+@@ -62,7 +62,7 @@
+             break;
+         }
+         context->riley->Render(context->renderViews.size(),
+-                           context->renderViews.data(), settings);        
++                           context->renderViews.data(), settings);
+         // If a pause was requested, we may have stopped early
+         renderComplete = !context->renderThread.IsPauseDirty();
+     }
+@@ -82,7 +82,7 @@
+ 
+ HdxPrman_InteractiveContext::~HdxPrman_InteractiveContext()
+ {
+-    End();    
++    End();
+ }
+ 
+ TF_DEFINE_ENV_SETTING(HDX_PRMAN_ENABLE_MOTIONBLUR, true,
+@@ -145,7 +145,7 @@
+ 
+ void HdxPrman_InteractiveContext::Begin(HdRenderDelegate *renderDelegate)
+ {
+-    //////////////////////////////////////////////////////////////////////// 
++    ////////////////////////////////////////////////////////////////////////
+     //
+     // Riley setup
+     //
+@@ -193,7 +193,7 @@
+     // Options
+     {
+         // Set thread limit for Renderman. Leave a few threads for app.
+-        static const unsigned appThreads = 4;
++        static const unsigned appThreads = 2;
+         unsigned nThreads = std::max(WorkGetConcurrencyLimit()-appThreads, 1u);
+         // Check the environment
+         unsigned nThreadsEnv = TfGetEnvSetting(HDX_PRMAN_NTHREADS);
+@@ -236,7 +236,7 @@
+         VtValue vtPixelVariance = renderDelegate->GetRenderSetting(
+             HdRenderSettingsTokens->convergedVariance).Cast<float>();
+         float pixelVariance = TF_VERIFY(!vtPixelVariance.IsEmpty()) ?
+-            vtPixelVariance.UncheckedGet<float>() : 0.001f;
++            vtPixelVariance.UncheckedGet<float>() : 0.1f;
+         _options.SetFloat(RixStr.k_Ri_PixelVariance, pixelVariance);
+ 
+         HdPrman_UpdateSearchPathsFromEnvironment(_options);
+@@ -258,11 +258,11 @@
+ 
+         // Searchpaths (TEXTUREPATH, etc)
+         HdPrman_UpdateSearchPathsFromEnvironment(_options);
+-        
++
+         // Set Options from RenderSettings schema
+         SetOptionsFromRenderSettings(
+             static_cast<HdPrmanRenderDelegate*>(renderDelegate), _options);
+-        
++
+         riley->SetOptions(_options);
+     }
+ 
+@@ -271,7 +271,7 @@
+     // the active render target, below.
+     integratorId = riley::IntegratorId::k_InvalidId;
+     {
+-        std::string integratorName = 
++        std::string integratorName =
+             renderDelegate->GetRenderSetting<std::string>(
+                 HdPrmanRenderSettingsTokens->integratorName,
+                 HdPrmanIntegratorTokens->PxrPathTracer.GetString());
+@@ -281,13 +281,13 @@
+                             static_cast<HdPrmanRenderDelegate*>(renderDelegate),
+                             integratorName,
+                             params);
+-        RtUString rmanIntegrator(integratorName.c_str()); 
++        RtUString rmanIntegrator(integratorName.c_str());
+         riley::ShadingNode  integratorNode {
+             riley::ShadingNode::k_Integrator,
+             rmanIntegrator,
+             rmanIntegrator,
+             params
+-        };    
++        };
+         integratorId = riley->CreateIntegrator(integratorNode);
+     }
+ 
+@@ -303,7 +303,7 @@
+         camParams.SetFloat(RixStr.k_shutterOpenTime, shutterCurve[0]);
+         camParams.SetFloat(RixStr.k_shutterCloseTime, shutterCurve[1]);
+         camParams.SetFloatArray(RixStr.k_shutteropening, shutterCurve+2, 8);
+-        
++
+         // Projection
+         riley::ShadingNode cameraNode = riley::ShadingNode {
+             riley::ShadingNode::k_Projection,
+@@ -331,81 +331,81 @@
+ 
+         RtParamList renderOutputParams;
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_Ci, 
++            riley->CreateRenderOutput(RixStr.k_Ci,
+                                       riley::RenderOutputType::k_Color,
+-                                      RixStr.k_Ci, 
+-                                      RixStr.k_filter, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_Ci,
++                                      RixStr.k_filter,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+-        
++
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_a, 
++            riley->CreateRenderOutput(RixStr.k_a,
+                                       riley::RenderOutputType::k_Float,
+-                                      RixStr.k_a, 
+-                                      RixStr.k_filter, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_a,
++                                      RixStr.k_filter,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+ 
+         renderOutputParams.SetString(RixStr.k_rule, RixStr.k_zmin);
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_z, 
++            riley->CreateRenderOutput(RixStr.k_z,
+                                       riley::RenderOutputType::k_Integer,
+-                                      RixStr.k_z, 
+-                                      RixStr.k_zmin, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_z,
++                                      RixStr.k_zmin,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+ 
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_id, 
++            riley->CreateRenderOutput(RixStr.k_id,
+                                       riley::RenderOutputType::k_Integer,
+-                                      RixStr.k_id, 
+-                                      RixStr.k_zmin, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_id,
++                                      RixStr.k_zmin,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+ 
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_id2, 
++            riley->CreateRenderOutput(RixStr.k_id2,
+                                       riley::RenderOutputType::k_Integer,
+-                                      RixStr.k_id2, 
+-                                      RixStr.k_zmin, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_id2,
++                                      RixStr.k_zmin,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+ 
+         renderOutputs.push_back(
+-            riley->CreateRenderOutput(RixStr.k_faceindex, 
++            riley->CreateRenderOutput(RixStr.k_faceindex,
+                                       riley::RenderOutputType::k_Integer,
+-                                      RixStr.k_faceindex, RixStr.k_zmin, 
+-                                      RixStr.k_box, 
+-                                      filterwidth, 
+-                                      1.0f, 
++                                      RixStr.k_faceindex, RixStr.k_zmin,
++                                      RixStr.k_box,
++                                      filterwidth,
++                                      1.0f,
+                                       renderOutputParams));
+-        
+-        uint32_t renderTargetFormat[3] = 
++
++        uint32_t renderTargetFormat[3] =
+             {static_cast<uint32_t>(resolution[0]),
+              static_cast<uint32_t>(resolution[1]), 1};
+         RtParamList renderTargetParams;
+         rtid =riley->CreateRenderTarget(
+-                    (uint32_t)renderOutputs.size(), 
+-                    renderOutputs.data(), 
++                    (uint32_t)renderOutputs.size(),
++                    renderOutputs.data(),
+                     renderTargetFormat,
+-                    RtUString("weighted"), 
+-                    1.0f, 
++                    RtUString("weighted"),
++                    1.0f,
+                     renderTargetParams);
+ 
+         RtParamList displayParams;
+-        riley->CreateDisplay(rtid, 
+-                             RixStr.k_framebuffer, 
+-                             us_hydra, 
++        riley->CreateDisplay(rtid,
++                             RixStr.k_framebuffer,
++                             us_hydra,
+                              (uint32_t)renderOutputs.size(),
+                              renderOutputs.data(),
+                              displayParams);
+@@ -422,8 +422,8 @@
+ 
+     // Set camera & display
+     renderViews.clear();
+-    renderViews.push_back(riley::RenderView{rtid, 
+-                                            integratorId, 
++    renderViews.push_back(riley::RenderView{rtid,
++                                            integratorId,
+                                             cameraId});
+     riley->SetActiveCamera(cameraId);
+ 
+@@ -478,7 +478,7 @@
+         pxrPrimvar_node.handle = us_pv_color;
+         pxrPrimvar_node.params.SetString(us_varname, us_displayColor);
+         // Note: this 0.5 gray is to match UsdImaging's fallback.
+-        pxrPrimvar_node.params.SetColor(us_defaultColor, 
++        pxrPrimvar_node.params.SetColor(us_defaultColor,
+                                         RtColorRGB(0.5, 0.5, 0.5));
+         pxrPrimvar_node.params.SetString(RixStr.k_type, RixStr.k_color);
+         materialNodes.push_back(pxrPrimvar_node);
+@@ -492,9 +492,9 @@
+         pxrSurface_node.params.SetInteger(us_specularModelType, 1);
+         pxrSurface_node.params.SetInteger(us_diffuseDoubleSided, 1);
+         pxrSurface_node.params.SetInteger(us_specularDoubleSided, 1);
+-        pxrSurface_node.params.SetColor(us_specularFaceColor, 
++        pxrSurface_node.params.SetColor(us_specularFaceColor,
+                                         RtColorRGB(0.04f));
+-        pxrSurface_node.params.SetColor(us_specularEdgeColor, 
++        pxrSurface_node.params.SetColor(us_specularEdgeColor,
+                                         RtColorRGB(1.0f));
+         materialNodes.push_back(pxrSurface_node);
+ 
